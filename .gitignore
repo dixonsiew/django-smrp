@@ -1,0 +1,65 @@
+# ==========================================
+# Python & Django Core Caches
+# ==========================================
+__pycache__/
+*.py[cod]
+*\$py.class
+*.so
+
+# ==========================================
+# Environments & Dependencies
+# ==========================================
+.env
+.venv
+env/
+venv/
+ENV/
+nrenv/
+sandbox/
+
+# ==========================================
+# Databases (Local Development)
+# ==========================================
+*.sqlite3
+*.sqlite3-journal
+
+# ==========================================
+# Media & Dynamic Assets
+# ==========================================
+# Media files (user uploads) should never be tracked
+media/
+
+# Static files collected via `collectstatic` (uncomment if you want to ignore them)
+# staticfiles/
+
+# ==========================================
+# Logs, Backups & System Files
+# ==========================================
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Testing & Coverage
+# ==========================================
+.htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.pytest_cache/
+
+# ==========================================
+# IDE & Code Editors
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
