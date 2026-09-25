@@ -1,8 +1,10 @@
 from ninja import NinjaAPI, Swagger
 from ninja.errors import ValidationError
-from .models import LoginDto
+from .models import LoginDto, CommonSetup
+from .db import pool
 
 import logging
+from . import db
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +49,13 @@ def add(request, a: int, b: int):
 @api.post("/login")
 def login(request, data: LoginDto):
     return data
+
+@api.get("/city/list")
+async def list_city(request):
+    table = 'city'
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(f"""
+            select t.id, t.code, t.desc, t.ref, t.created_by, t.created_date, t.modified_by, t.modified_date, t.deleted, t.deleted_by, t.deleted_date 
+            from {table} t where t.desc <> '' and t.deleted is not true order by t.code
+        """)
+    return [CommonSetup(**dict(row)) for row in rows]
