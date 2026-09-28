@@ -3,8 +3,7 @@ from ninja.errors import ValidationError
 from datetime import datetime, timedelta, timezone
 from django.conf import settings
 from django.http import HttpResponse
-from .models import LoginDto, CommonSetup
-from .db import pool
+from .models import LoginDto
 from .auth import jwt_auth
 
 import logging, jwt, datetime
@@ -12,6 +11,8 @@ import logging, jwt, datetime
 logger = logging.getLogger(__name__)
 
 api = NinjaAPI(auth=jwt_auth, docs=Swagger(settings={"persistAuthorization": True}))
+
+from smrp.setup.city import router
 
 
 @api.exception_handler(Exception)
@@ -88,13 +89,5 @@ def login(request, data: LoginDto, response: HttpResponse):
         "token": token,
         "refresh_token": refresh_token
     }
-
-@api.get("/city/list")
-async def list_city(request):
-    table = 'city'
-    async with pool.acquire() as conn:
-        rows = await conn.fetch(f"""
-            select t.id, t.code, t.desc, t.ref, t.created_by, t.created_date, t.modified_by, t.modified_date, t.deleted, t.deleted_by, t.deleted_date 
-            from {table} t where t.desc <> '' and t.deleted is not true order by t.code
-        """)
-    return [CommonSetup(**dict(row)) for row in rows]
+    
+api.add_router("/api", router)

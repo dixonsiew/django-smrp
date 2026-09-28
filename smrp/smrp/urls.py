@@ -23,5 +23,5 @@ from .api import api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/", api.urls)
+    path("smrp/", api.urls)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
