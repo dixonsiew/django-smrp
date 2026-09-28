@@ -1,14 +1,17 @@
 from ninja import NinjaAPI, Swagger
 from ninja.errors import ValidationError
+from datetime import datetime, timedelta, timezone
+from django.conf import settings
+from django.http import HttpResponse
 from .models import LoginDto, CommonSetup
 from .db import pool
+from .auth import jwt_auth
 
-import logging
-from . import db
+import logging, jwt, datetime
 
 logger = logging.getLogger(__name__)
 
-api = NinjaAPI(docs=Swagger(settings={"persistAuthorization": True}))
+api = NinjaAPI(auth=jwt_auth, docs=Swagger(settings={"persistAuthorization": True}))
 
 
 @api.exception_handler(Exception)
@@ -46,9 +49,45 @@ def custom_validation_error_handler(request, exc: ValidationError):
 def add(request, a: int, b: int):
     return {"result": a + b}
 
-@api.post("/login")
-def login(request, data: LoginDto):
-    return data
+@api.post("/login", auth=None)
+def login(request, data: LoginDto, response: HttpResponse):
+    payload = {
+        "sub": '8',
+        "username": "admin",
+        "exp": datetime.datetime.now(timezone.utc) + timedelta(hours=720)
+    }
+    payloadr = {
+        "sub": '8',
+        "username": "admin",
+        "exp": datetime.datetime.now(timezone.utc) + timedelta(hours=87600)
+    }
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+    refresh_token = jwt.encode(payloadr, settings.SECRET_KEY, algorithm="HS256")
+    
+    response.set_cookie(
+        key="token",
+        value=token,
+        max_age=30 * 24 * 60 * 60,       # Expires in 1 hour (in seconds)
+        httponly=True,      # Protects against XSS attacks
+        secure=False,        # Only sent over HTTPS
+        samesite="Lax",      # Protects against CSRF
+        path="/"
+    )
+    response.set_cookie(
+        key="refreshToken",
+        value=refresh_token,
+        max_age=3650 * 24 * 60 * 60,       # Expires in 1 hour (in seconds)
+        httponly=True,      # Protects against XSS attacks
+        secure=False,        # Only sent over HTTPS
+        samesite="Lax",      # Protects against CSRF
+        path="/smrp/o/refresh-token"
+    )
+    
+    return {
+        "type": "bearer",
+        "token": token,
+        "refresh_token": refresh_token
+    }
 
 @api.get("/city/list")
 async def list_city(request):

@@ -14,6 +14,12 @@ class User(Schema):
     last_name: str | None = None
     last_login: str | None = None
     
+class AuthUser(Schema):
+    id: int
+    username: str
+    first_name: str = ""
+    last_name: str | None = None
+    
 class CommonSetup(Schema):
     id: int = None
     code: str | None = ""
