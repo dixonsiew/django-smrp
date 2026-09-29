@@ -1,10 +1,12 @@
 from ninja import Query
+from django.http import JsonResponse
+from ninja.errors import HttpError
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 
 from smrp.services.role import RoleService
 from smrp.services.user import UserServie
 from smrp.models import Pager
-from smrp.dto import KeywordDto
+from smrp.dto import KeywordDto, UserDto
 from smrp.constant import AppConstant
 
 
@@ -67,3 +69,31 @@ class UserController:
         self.context.response.headers[AppConstant.X_TOTAL_COUNT] = str(total)
         self.context.response.headers[AppConstant.X_TOTAL_PAGE] = str(pg.total_pages)
         return lx
+    
+    @http_post("/user")
+    async def create(self, data: UserDto):
+        user_id = self.context.request.user.id
+        if user_id is None:
+            raise HttpError(401, "Unauthorized")
+
+        b = await self.service.exists_by_username(data.username)
+        
+        if b:
+            return self.bad_request({
+                "statusCode": 400,
+                "message": "A user with that username already exists"
+            })
+            
+        role = await self.role_service.find_by_id(data.role_id)
+        
+        if role is None:
+            return JsonResponse({
+                "statusCode": 404,
+                "message": "A user with that username already exists"
+            }, status=404)
+            
+        # o = User(password=data.password, username=data.username, first_name=data.first_name, last_name=data.last_name, roles=[role])
+        # await self.cs.save(o)
+        return {
+            "success": 1
+        }
