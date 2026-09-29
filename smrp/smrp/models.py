@@ -8,12 +8,12 @@ class Role(Schema):
     name: str | None = None
     
 class User(Schema):
-    password: str | None = None
+    password: str | None = Field(None, exclude=True)
     id: int = None
     username: str = ""
     first_name: str = ""
     last_name: str | None = None
-    last_login: str | None = None
+    last_login: str | datetime | None = None
     roles: list[Role] = Field(default_factory=list)
     
 class AuthUser(Schema):
