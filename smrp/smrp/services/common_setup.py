@@ -14,8 +14,8 @@ class CommonSetupService:
             
         if row:
             return CommonSetup(**dict(row))
-        else:
-            return None
+        
+        return None
         
     async def find_by_desc(self, desc: str, table: str) -> CommonSetup | None:
         async with pool.acquire() as conn:
@@ -26,8 +26,8 @@ class CommonSetupService:
             
         if row:
             return CommonSetup(**dict(row))
-        else:
-            return None
+        
+        return None
 
     async def find_all(self, table: str, offset: int, limit: int, sortby: str, sortdir: str) -> List[CommonSetup]:
         async with pool.acquire() as conn:

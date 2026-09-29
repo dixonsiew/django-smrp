@@ -3,9 +3,9 @@ from datetime import datetime
 import math
 
 
-class LoginDto(Schema):
-    username: str = Field('admin', min_length=1)
-    password: str = Field('', min_length=1)
+class Role(Schema):
+    id: int = None
+    name: str | None = None
     
 class User(Schema):
     password: str | None = None
@@ -14,6 +14,7 @@ class User(Schema):
     first_name: str = ""
     last_name: str | None = None
     last_login: str | None = None
+    roles: list[Role] = Field(default_factory=list)
     
 class AuthUser(Schema):
     id: int
