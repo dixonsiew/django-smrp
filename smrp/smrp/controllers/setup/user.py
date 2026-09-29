@@ -47,7 +47,7 @@ class UserController:
                           keyword: KeywordDto,
                           page: int = Query('1', alias='_page'),
                           limit: int = Query('20', alias='_limit'),
-                          sort: str = ""): 
+                          sort: str = ""):
         sorts = sort
         sortby = "username"
         sortdir = "asc"
