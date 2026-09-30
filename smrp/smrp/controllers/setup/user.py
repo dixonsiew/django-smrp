@@ -72,7 +72,7 @@ class UserController:
     
     @http_post("/user")
     async def create(self, data: UserDto):
-        user_id = self.context.request.user.id
+        user_id = self.context.request.auth.id
         if user_id is None:
             raise HttpError(401, "Unauthorized")
 
