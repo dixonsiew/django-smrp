@@ -35,7 +35,7 @@ class UserController:
             sortdir = arr[1]
             
         total = await self.service.count()
-        pg = Pager(total, page, limit)
+        pg = Pager(total, int(page), int(limit))
         lx = await self.service.find_all(pg.lower_bound, pg.page_size, sortby, sortdir)
         
         self.context.response.headers[AppConstant.X_TOTAL_COUNT] = str(total)
@@ -63,7 +63,7 @@ class UserController:
             sortdir = arr[1]
 
         total = await self.service.count_by_keyword(key)
-        pg = Pager(total, page, limit)
+        pg = Pager(total, int(page), int(limit))
         lx = await self.service.find_by_keyword(key, pg.lower_bound, pg.page_size, sortby, sortdir)
         
         self.context.response.headers[AppConstant.X_TOTAL_COUNT] = str(total)

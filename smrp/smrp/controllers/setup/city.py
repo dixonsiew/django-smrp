@@ -38,7 +38,7 @@ class CityController:
             sortdir = arr[1]
                 
         total = await self.service.count(self.table)
-        pg = Pager(total, page, limit)
+        pg = Pager(total, int(page), int(limit))
         lx = await self.service.find_all(self.table, pg.lower_bound, pg.page_size, sortby, sortdir)
         
         self.context.response.headers[AppConstant.X_TOTAL_COUNT] = str(total)
@@ -67,7 +67,7 @@ class CityController:
             sortdir = arr[1]
             
         total = await self.service.count_by_keyword(key, self.table)
-        pg = Pager(total, page, limit)
+        pg = Pager(total, int(page), int(limit))
         lx = await self.service.find_by_keyword(key, pg.lower_bound, pg.page_size, sortby, sortdir, self.table)
         
         self.context.response.headers[AppConstant.X_TOTAL_COUNT] = str(total)
