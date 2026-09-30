@@ -25,8 +25,6 @@ class CityController:
                    page: int = Query('1', alias='_page'), 
                    limit: int = Query('20', alias='_limit'), 
                    sort: str = ""):
-        pagei = int(page)
-        limiti = int(limit)
         sorts = sort
             
         sortby = "code"
