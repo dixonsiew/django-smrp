@@ -2,6 +2,7 @@ from ninja import Query
 from django.http import JsonResponse
 from ninja.errors import HttpError
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
+from injector import inject
 
 from smrp.services.role import RoleService
 from smrp.services.user import UserServie
@@ -13,6 +14,7 @@ from smrp.constant import AppConstant
 @api_controller('/api', tags=['Setup/User'])
 class UserController:
     
+    @inject
     def __init__(self, role_service: RoleService, service: UserServie):
         self.service = service
         self.role_service = role_service

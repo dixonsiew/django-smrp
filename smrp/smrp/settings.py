@@ -11,9 +11,21 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import environ, os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env(
+    # set casting and default values
+    DEBUG=(bool, False)
+)
+
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+FACILITYCODE = env('facilityCode')
+POSTGRES_DB = env('postgres_db')
+MONGODB_PREFIX = env('mongodb_prefix')
 
 
 # Quick-start development settings - unsuitable for production
@@ -126,6 +138,43 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",  # Your frontend URL
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False, # Keeps Django's default loggers running
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler', # Outputs logs to terminal
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler', # Saves logs to a file
+            'filename': 'app.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # Catch-all logger for your own custom app logs
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+        # Optional: Fine-tune Django's framework logs
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False, # Prevents duplicate logs in the catch-all logger
+        },
+    },
+}
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration

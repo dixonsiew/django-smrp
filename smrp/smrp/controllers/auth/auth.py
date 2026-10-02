@@ -2,6 +2,7 @@ from ninja_extra import api_controller, http_get, http_post
 from django.http import JsonResponse
 from ninja.errors import HttpError
 from datetime import datetime, timedelta, UTC
+from injector import inject
 from smrp.dto import LoginDto, RefreshTokenDto, ChangePasswordDto
 from smrp.services.token import TokenService
 from smrp.services.user import UserServie
@@ -10,6 +11,7 @@ from smrp.services.user import UserServie
 @api_controller('/', tags=['Auth'])
 class AuthController:
     
+    @inject
     def __init__(self, ts: TokenService, us: UserServie):
         self.token_service = ts
         self.user_service = us
@@ -81,8 +83,8 @@ class AuthController:
             max_age=3650 * 24 * 60 * 60
         )
         return {
-            "type": "bearer",
-            "token": token,
+            "type":          "bearer",
+            "token":         token,
             "refresh_token": refresh_token
         }
         
@@ -129,8 +131,8 @@ class AuthController:
             max_age=3650 * 24 * 60 * 60
         )
         return {
-            "type": "bearer",
-            "token": token,
+            "type":          "bearer",
+            "token":         token,
             "refresh_token": refresh_token
         }
         
@@ -141,11 +143,11 @@ class AuthController:
             raise HttpError(401, "Unauthorized")
 
         return {
-            "id": o.id,
-            "username": o.username,
+            "id":         o.id,
+            "username":   o.username,
             "first_name": o.first_name,
-            "last_name": o.last_name,
-            "roles": o.roles
+            "last_name":  o.last_name,
+            "roles":      o.roles
         }
     
     @http_post("/api/change-password") 

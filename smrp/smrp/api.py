@@ -3,7 +3,7 @@ from ninja.errors import ValidationError
 from ninja_extra import NinjaExtraAPI
 from .auth import jwt_auth
 
-import logging
+import logging, traceback
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ from smrp.controllers.router import register_route
 
 @api.exception_handler(Exception)
 def global_exception_handler(request, exc):
-    logger.exception(str(exc))
+    logger.error(traceback.format_exc())
     return api.create_response(
         request,
         {"message": "Internal Server Error", "detail": str(exc)},

@@ -2,6 +2,7 @@ from ninja import Query
 from django.http import JsonResponse
 from ninja.errors import HttpError
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
+from injector import inject
 
 from smrp.services.common_setup import CommonSetupService
 from smrp.models import Pager
@@ -12,6 +13,7 @@ from smrp.constant import AppConstant
 @api_controller('/api', tags=['Setup/City'])
 class CityController:
     
+    @inject
     def __init__(self, service: CommonSetupService):
         self.service = service
         self.table = "city"

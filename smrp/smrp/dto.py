@@ -21,3 +21,10 @@ class UserDto(Schema):
     first_name: str = Field(..., min_length=1, max_length=150)
     last_name: str = Field(..., max_length=150)
     role_id: int = Field(..., ge=1)
+    
+class ReportQueryDto(Schema):
+    page: int = Field(1, alias='_page', ge=1)
+    limit: int = Field(20, alias='_limit', ge=1)
+    vt: int = Field(...)
+    datefrom: str = Field("", max_length=10)
+    dateto: str = Field("", max_length=10)

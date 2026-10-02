@@ -1,0 +1,142 @@
+from datetime import datetime, timezone
+import re
+
+
+def get_date_str(v):
+    o = ""
+    
+    # Check if v is a bson.DateTime (Python: datetime)
+    if isinstance(v, datetime):
+        o = get_str(v)
+        try:
+            iv = int(o)
+        except (ValueError, TypeError):
+            iv = 0
+        t = datetime.fromtimestamp(iv / 1000, tz=timezone.utc)
+        o = t.strftime("%Y-%m-%d")
+        
+    else:
+        o = get_str(v)
+
+    s = o
+    if len(o) >= 10:
+        i = s.find("/")
+        if i > 0:
+            try:
+                s = s.split(" ")[0]
+                g = datetime.strptime(s, "%d/%m/%Y")
+                o = g.strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+            
+        else:
+            i = s.find("-")
+            if i > 0:
+                try:
+                    s = s.split(" ")[0]
+                    g = datetime.strptime(s, "%d-%m-%Y")
+                    o = g.strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
+            
+        s = o.split(" ")[0]
+        
+    else:
+        i = s.find("/")
+        if i > 0:
+            try:
+                s = s.split(" ")[0]
+                g = datetime.strptime(s, "%d/%m/%Y")
+                o = g.strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+            
+        else:
+            i = s.find("-")
+            if i > 0:
+                try:
+                    s = s.split(" ")[0]
+                    g = datetime.strptime(s, "%d-%m-%Y")
+                    o = g.strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
+                
+        s = o.split(" ")[0]
+
+    return s
+
+def set_value(x, ofield, src_field):
+    v = x[src_field]
+    if ofield in x:
+        s = x[ofield]
+        if s == "N/A":
+            x[ofield] = v
+            
+    else:
+        x[ofield] = v
+
+    if x[ofield] == "undefined":
+        x[ofield] = "N/A"
+
+def get_str(a):
+    return str(a)
+
+def get_number(s):
+    try:
+        return int(s)
+    except:
+        return 0
+
+
+def get_num(s):
+    r = re.sub(r"[^\d.]*", "", s)
+    try:
+        return float(r)
+    except:
+        return 0.0
+    
+def process_doc(lx: list):
+    ls = []
+    na = "N/A"
+    for x in lx:
+        if "ADMISSION_DATE" in x:
+            x["ADMISSION_DATE"] = get_date_str(x["ADMISSION_DATE"])
+
+        if "DISCHARGE_DATE" in x:
+            x["DISCHARGE_DATE"] = get_date_str(x["DISCHARGE_DATE"])
+
+        if "DEATH_DATE" in x:
+            x["DEATH_DATE"] = get_date_str(x["DEATH_DATE"])
+
+        if "DELIVERY_DATE" in x:
+            x["DELIVERY_DATE"] = get_date_str(x["DELIVERY_DATE"])
+
+        if "PATIENT_NOK_NAME" in x:
+            s = x["PATIENT_NOK_NAME"]
+            if na == s:
+                x["NOK_STREET1"] = na
+                x["NOK_STREET2"] = na
+                x["NOK_CITYCODE"] = na
+                x["NOK_POSTCODE"] = na
+                x["NOK_OCITY"] = na
+                x["NOK_NATIONALITY"] = na
+                
+            else:
+                set_value(x, "NOK_STREET1", "STREET1")
+                set_value(x, "NOK_STREET2", "STREET2")
+                set_value(x, "NOK_CITYCODE", "CITYCODE")
+                set_value(x, "NOK_POSTCODE", "POSTCODE")
+                set_value(x, "NOK_OCITY", "OCITY")
+                set_value(x, "NOK_NATIONALITY", "NATIONALITY")
+                
+        else:
+            x["NOK_STREET1"] = na
+            x["NOK_STREET2"] = na
+            x["NOK_CITYCODE"] = na
+            x["NOK_POSTCODE"] = na
+            x["NOK_OCITY"] = na
+            x["NOK_NATIONALITY"] = na
+
+        ls.append(x)
+
+    return ls
