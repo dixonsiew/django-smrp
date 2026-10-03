@@ -21,7 +21,7 @@ class MasterPD101Controller:
         self.service = service
         
     @http_get("/export/rpt1")
-    async def jsonpd101(self, datefrom: str = "", dateto: str = ""):
+    async def jsonpd101(self, datefrom: str = "2023-01-01", dateto: str = "2024-01-01"):
         username = self.context.request.auth.username
         col = self.get_collection(client, username, "0")
         cur = col.find({})
@@ -103,15 +103,7 @@ class MasterPD101Controller:
         facilityCode = settings.FACILITYCODE
         filename = f"{facilityCode}_{ds1}_{ds2}_PD101.json"
         
-        res = self.context.response
-        res.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-        res.headers["Pragma"] = "no-cache"
-        res.headers["Expires"] = "0"
-        res.headers["filename"] = filename
-        res.headers["Content-Type"] = "application/json"
-        
-        return {
+        x = {
             "filename":           filename,
             "admissionFrom":      datefrom,
             "admissionTo":        dateto,
@@ -119,6 +111,14 @@ class MasterPD101Controller:
             "facilityCode":       facilityCode,
             "forms":              forms,
         }
+        res = JsonResponse(x, json_dumps_params={'indent': 4})
+        res.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        res.headers["Pragma"] = "no-cache"
+        res.headers["Expires"] = "0"
+        res.headers["filename"] = filename
+        res.headers["Content-Type"] = "application/json"
+        return res
     
     @http_get("/rpt1")
     async def list(self,

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+from .constant import AppConstant
 import environ, os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -137,6 +138,12 @@ STATIC_ROOT = BASE_DIR / "public"
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",  # Your frontend URL
+]
+
+CORS_EXPOSE_HEADERS = [
+    "filename",
+    AppConstant.X_TOTAL_COUNT,
+    AppConstant.X_TOTAL_PAGE,
 ]
 
 LOGGING = {
