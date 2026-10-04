@@ -36,9 +36,9 @@ MONGODB_PREFIX = env('mongodb_prefix')
 SECRET_KEY = 'django-insecure-pkfnt^asyz55pdvpu$gpadme=8!yk$l1me^4-k^oynk6bjq^j7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
 
 
 # Application definition
@@ -137,7 +137,7 @@ STATIC_ROOT = BASE_DIR / "public"
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",  # Your frontend URL
+    "http://localhost:8100",  # Your frontend URL
 ]
 
 CORS_EXPOSE_HEADERS = [

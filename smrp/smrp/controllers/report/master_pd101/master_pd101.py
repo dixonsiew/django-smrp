@@ -20,6 +20,99 @@ class MasterPD101Controller:
     def __init__(self, service: ReportService):
         self.service = service
         
+    @http_get("/export/rpt2")
+    async def jsonrh101(self, datefrom: str = "2023-01-01", dateto: str = "2024-01-01"):
+        username = self.context.request.auth.username
+        col = self.get_collection(client, username, "1")
+        cur = col.find({})
+        ls = utils.process_doc(list(cur))
+
+        dt1 = datefrom.split("-")
+        dt2 = dateto.split("-")
+        ds1 = f"{dt1[2]}{dt1[1]}{dt1[0]}"
+        ds2 = f"{dt2[2]}{dt2[1]}{dt2[0]}"
+
+        forms = []
+        for d in ls:
+            person = {
+                "refPersonTitleCode":        await self.service.ref_person_title_code(d),
+                "fullName":                  utils.get_str(d["PATIENT_NAME"]),
+                "refIdentificationTypeCode": await self.service.ref_identification_type_code(d),
+                "identificationNo":          utils.get_str(d["DOCUMENT_NUMBER"]),
+                "refAddressTypeCode":        "C",
+                "street1":                   utils.get_str(d["STREET1"]),
+                "street2":                   utils.get_str(d["STREET2"]),
+                "refCityCode":               await self.service.ref_city_code(d),
+                "refPostCode":               utils.get_str(d["POSTCODE"]),
+                "refStateCode":              await self.service.ref_state_code(d),
+                "refCountryCode":            await self.service.ref_citizenship_code(d),
+                "refContactTypeCode":        "02",
+                "contactInfo":               utils.get_str(d["HOME_PHONE"]),
+            }
+
+            nok = {
+                "refPersonTitleCode":        await self.service.ref_person_title_code_nok(d),
+                "fullName":                  utils.get_str(d["PATIENT_NOK_NAME"]),
+                "refIdentificationTypeCode": await self.service.ref_identification_type_code_nok(d),
+                "identificationNo":          utils.get_str(d["NOK_ID"]),
+                "refAddressTypeCode":        "C",
+                "street1":                   str(d["NOK_STREET1"]),
+                "street2":                   utils.get_str(d["NOK_STREET2"]),
+                "refCityCode":               await self.service.ref_city_code_nok(d),
+                "refPostCode":               utils.get_str(d["NOK_POSTCODE"]),
+                "refStateCode":              await self.service.ref_state_code_nok(d),
+                "refCountryCode":            await self.service.ref_citizenship_code_nok(d),
+                "refContactTypeCode":        "02",
+                "contactInfo":               utils.get_str(d["NOK_MOBILE_PHONE"]),
+            }
+
+            m = {
+                "rn":                               utils.get_str(d["ACCOUNT_NO"]),
+                "mrn":                              utils.get_str(d["PRN"]),
+                "eventDate":                        f"{d['REGISTRATION_DATE']} {d['REGISTRATION_TIME']}:00",
+                "isPoliceCase":                     "02",
+                "internalReferral":                 "false",
+                "refReferralSourceCode":            await self.service.ref_referral_source_code(d),
+                "refGenderCode":                    await self.service.ref_gender_code(d),
+                "dob":                              str(d["DOB"]),
+                "refMaritalStatusCode":             await self.service.ref_marital_status_code(d),
+                "refReligionCode":                  await self.service.ref_religion_code(d),
+                "refCitizenshipCode":               await self.service.ref_citizenship_code(d),
+                "refEthnicCode":                    await self.service.ref_ethnic_code(d),
+                "height":                           utils.get_num(str(d["HEIGHT"])),
+                "weight":                           utils.get_num(str(d["WEIGHT"])),
+                "refForeignerOriginCountryCode":    await self.service.ref_foreigner_origin_country_code(d),
+                "refForeignerResidenceCountryCode": await self.service.ref_foreigner_residence_country_code(d),
+                "refPersonCategoryCode":            await self.service.ref_person_category_code(d),
+                "refRelationshipCode":              await self.service.ref_relationship_code(d),
+                "totalDurationDay":                 "0",
+                "admissionDate":                    f"{d['ADMISSION_DATE']} {d['ADMISSION_TIME']}:00",
+                "person":                           person,
+                "nextOfKins":                       nok,
+            }
+
+            forms.append(m)
+
+        facilityCode = settings.FACILITYCODE
+        filename = f"{facilityCode}_{ds1}_{ds2}_RH101.json"
+
+        x = {
+            "filename":           filename,
+            "admissionFrom":      datefrom,
+            "admissionTo":        dateto,
+            "refServiceTypeCode": "02",
+            "facilityCode":       facilityCode,
+            "forms":              forms,
+        }
+        res = JsonResponse(x, json_dumps_params={'indent': 4, 'sort_keys': False})
+        res.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        res.headers["Pragma"] = "no-cache"
+        res.headers["Expires"] = "0"
+        res.headers["filename"] = filename
+        res.headers["Content-Type"] = "application/json"
+        return res
+        
     @http_get("/export/rpt1")
     async def jsonpd101(self, datefrom: str = "2023-01-01", dateto: str = "2024-01-01"):
         username = self.context.request.auth.username
@@ -111,7 +204,7 @@ class MasterPD101Controller:
             "facilityCode":       facilityCode,
             "forms":              forms,
         }
-        res = JsonResponse(x, json_dumps_params={'indent': 4})
+        res = JsonResponse(x, json_dumps_params={'indent': 4, 'sort_keys': False})
         res.headers["Content-Disposition"] = f"attachment; filename={filename}"
         res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         res.headers["Pragma"] = "no-cache"
