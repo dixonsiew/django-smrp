@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
-import re
+from openpyxl import Workbook
+from openpyxl.styles import Font
+from openpyxl.utils import get_column_letter
+import re, io
 
 
 def get_date_str(v):
@@ -140,3 +143,57 @@ def process_doc(lx: list):
         ls.append(x)
 
     return ls
+
+def get_xlsx(colmaps: list, lx: list):
+    """
+    colmaps: list of objects with .text and .field attributes (like report.ColumnMap)
+    lx: list of dicts (like bson.M)
+    Returns: io.BytesIO buffer
+    """
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+
+    bold_font = Font(bold=True)
+    coloffset = 6
+
+    # Track column widths locally (openpyxl width is in characters)
+    col_widths = {}
+
+    # --- Header row ---
+    for i, cx in enumerate(colmaps):
+        j = i + 1
+        cell = ws.cell(row=1, column=j, value=cx.get('text'))
+        cell.font = bold_font
+        n = len(cx.get('text')) if cx.get('text') else 0
+        col_letter = get_column_letter(j)
+        col_widths[col_letter] = float(n + coloffset)
+        ws.column_dimensions[col_letter].width = col_widths[col_letter]
+
+    # --- Data rows ---
+    k = 2
+    for x in lx:
+        for i, cx in enumerate(colmaps):
+            field = cx.get('field')
+            j = i + 1
+            s = ""
+            if field in x:
+                s = get_str(x[field])
+
+            ws.cell(row=k, column=j, value=s)
+
+            n = len(s) if s else 0
+            col_letter = get_column_letter(j)
+            m = col_widths.get(col_letter, 0.0)
+            if float(n) > (m - float(coloffset)):
+                new_width = float(n + coloffset)
+                col_widths[col_letter] = new_width
+                ws.column_dimensions[col_letter].width = new_width
+
+        k += 1
+
+    # --- Write to buffer ---
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return buf

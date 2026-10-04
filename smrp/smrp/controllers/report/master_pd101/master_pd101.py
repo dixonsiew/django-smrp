@@ -1,6 +1,6 @@
 from ninja import Query, Body
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -70,7 +70,7 @@ class MasterPD101Controller:
                 "rn":                               utils.get_str(d["ACCOUNT_NO"]),
                 "mrn":                              utils.get_str(d["PRN"]),
                 "eventDate":                        f"{d['REGISTRATION_DATE']} {d['REGISTRATION_TIME']}:00",
-                "isPoliceCase":                     "02",
+                "isPoliceCase":                     "00",
                 "internalReferral":                 "false",
                 "refReferralSourceCode":            await self.service.ref_referral_source_code(d),
                 "refGenderCode":                    await self.service.ref_gender_code(d),
@@ -213,6 +213,31 @@ class MasterPD101Controller:
         res.headers["Content-Type"] = "application/json"
         return res
     
+    @http_get("/export/rpt1/xlsx")
+    async def xlsx(self, vt: str = "0", datefrom: str = "2023-01-01", dateto: str = "2024-01-01"):
+        username = self.context.request.auth.username
+        col = self.get_collection(client, username, vt)
+        cur = col.find({})
+        ls = utils.process_doc(list(cur))
+        
+        dt1 = datefrom.split("-")
+        dt2 = dateto.split("-")
+        ds1 = f"{dt1[2]}{dt1[1]}{dt1[0]}"
+        ds2 = f"{dt2[2]}{dt2[1]}{dt2[0]}"
+        pf = "PD101" if vt == "0" else "RH101"
+        
+        facilityCode = settings.FACILITYCODE
+        filename = f"{facilityCode}_{ds1}_{ds2}_{pf}.xlsx"
+        bx = utils.get_xlsx(COLUMN_MAP, ls)
+        
+        res = HttpResponse(bx.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        res.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        res.headers["Pragma"] = "no-cache"
+        res.headers["Expires"] = "0"
+        res.headers["filename"] = filename
+        return res
+        
     @http_get("/rpt1")
     async def list(self,
                    page: int = Query('1', alias='_page'),
