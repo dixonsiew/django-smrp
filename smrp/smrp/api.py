@@ -7,7 +7,7 @@ import logging, traceback
 
 logger = logging.getLogger(__name__)
 
-api = NinjaExtraAPI(auth=jwt_auth, docs=Swagger(settings={"persistAuthorization": True}))
+api = NinjaExtraAPI(auth=jwt_auth, docs=Swagger(settings={"persistAuthorization": True}), title="Swagger SMRP Backend API")
 
 from smrp.controllers.router import register_route
 

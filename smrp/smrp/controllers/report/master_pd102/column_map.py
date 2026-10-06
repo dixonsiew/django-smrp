@@ -16,12 +16,10 @@ COLUMN_MAP = [
 
     ColumnMap(field="NATIONALITY", text="NATIONALITY"),
     ColumnMap(field="ETHNIC_GROUP", text="ETHNIC GROUP"),
-    ColumnMap(field="OCCUPATION", text="OCCUPATION"),
-    ColumnMap(field="HEIGHT", text="HEIGHT"),
-    ColumnMap(field="WEIGHT", text="WEIGHT"),
+    ColumnMap(field="PERSON_HEIGHT", text="HEIGHT"),
+    ColumnMap(field="PERSON_WEIGHT", text="WEIGHT"),
 
     ColumnMap(field="COUNTRY_OF_BIRTH", text="COUNTRY OF BIRTH"),
-    ColumnMap(field="REFPERSONCATEGORYCODE", text="PATIENT CATEGORY"),
     ColumnMap(field="DOCUMENT_TYPE", text="DOC TYPE"),
     ColumnMap(field="DOCUMENT_NUMBER", text="DOC NO"),
     ColumnMap(field="STREET1", text="STREET1"),
@@ -39,18 +37,31 @@ COLUMN_MAP = [
     ColumnMap(field="NOK_ID_TYPE", text="NOK DOC TYPE"),
 
     ColumnMap(field="NOK_ID", text="NOK DOC NO"),
-    ColumnMap(field="NOK_STREET1", text="STREET1"),
-    ColumnMap(field="NOK_STREET2", text="STREET2"),
-    ColumnMap(field="NOK_CITYCODE", text="STREET3"),
-    ColumnMap(field="NOK_POSTCODE", text="POSTCODE"),
+    ColumnMap(field="STREET1", text="STREET1"),
+    ColumnMap(field="STREET2", text="STREET2"),
+    ColumnMap(field="CITYCODE", text="STREET3"),
+    ColumnMap(field="POSTCODE", text="POSTCODE"),
 
-    ColumnMap(field="NOK_OCITY", text="STATE"),
+    ColumnMap(field="OCITY", text="STATE"),
     ColumnMap(field="COUNTRY", text="COUNTRY"),
     ColumnMap(field="NOK_MOBILE_PHONE", text="NOK MOBILE NO"),
     ColumnMap(field="ADMISSION_DATE", text="ADMISSION DATE"),
     ColumnMap(field="ADMISSION_TIME", text="ADMISSION TIME"),
 
     ColumnMap(field="WARD_NO", text="WARD NO"),
-    ColumnMap(field="PRIMARY_SPECIALITY", text="PRIMARY SPECIALITY"),
     ColumnMap(field="PAYMENT_CLASS_CODE", text="PAYMENT CLASS"),
+
+    ColumnMap(field="GRAVIDA", text="GRAVIDA"),
+    ColumnMap(field="PARITY", text="PARITY"),
+    ColumnMap(field="GESTATION_PERIOD", text="GESTATION PERIOD"),
+    ColumnMap(field="ISMOTHERALIVE", text="IS MOTHER ALIVE"),
+    ColumnMap(field="REFANTENATALCARECODE", text="ANTENATAL CARE"),
+    ColumnMap(field="LABOUR_METHOD", text="LABOUR METHOD"),
+
+    ColumnMap(field="DELIVERY_DATE", text="DELIVERY DATE"),
+    ColumnMap(field="RESULT_OF_BIRTH", text="RESULT OF BIRTH"),
+    ColumnMap(field="DELIVERY_TYPE", text="DELIVERY TYPE"),
+    ColumnMap(field="CHILD_SEX", text="CHILD SEX"),
+    ColumnMap(field="WEIGHT", text="WEIGHT"),
+    ColumnMap(field="LENGTH", text="LENGTH"),
 ]

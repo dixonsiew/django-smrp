@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
+from smrp.controllers.report.models import ColumnMap
 import re, io
 
 
@@ -144,7 +145,7 @@ def process_doc(lx: list):
 
     return ls
 
-def get_xlsx(colmaps: list, lx: list):
+def get_xlsx(colmaps: list[ColumnMap], lx: list):
     """
     colmaps: list of objects with .text and .field attributes (like report.ColumnMap)
     lx: list of dicts (like bson.M)
@@ -163,9 +164,9 @@ def get_xlsx(colmaps: list, lx: list):
     # --- Header row ---
     for i, cx in enumerate(colmaps):
         j = i + 1
-        cell = ws.cell(row=1, column=j, value=cx.get('text'))
+        cell = ws.cell(row=1, column=j, value=cx.text)
         cell.font = bold_font
-        n = len(cx.get('text')) if cx.get('text') else 0
+        n = len(cx.text) if cx.text else 0
         col_letter = get_column_letter(j)
         col_widths[col_letter] = float(n + coloffset)
         ws.column_dimensions[col_letter].width = col_widths[col_letter]
@@ -174,7 +175,7 @@ def get_xlsx(colmaps: list, lx: list):
     k = 2
     for x in lx:
         for i, cx in enumerate(colmaps):
-            field = cx.get('field')
+            field = cx.field
             j = i + 1
             s = ""
             if field in x:

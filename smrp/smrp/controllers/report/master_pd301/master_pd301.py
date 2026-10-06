@@ -13,8 +13,8 @@ from .column_map import COLUMN_MAP
 import smrp.utils as utils
 
 
-@api_controller("/api/master-pd101", tags=["Report/MasterPD101"])
-class MasterPD101Controller:
+@api_controller("/api/master-pd301", tags=["Report/MasterPD301"])
+class MasterPD301Controller:
     
     @inject
     def __init__(self, service: ReportService):
@@ -87,6 +87,14 @@ class MasterPD101Controller:
                 "refRelationshipCode":              await self.service.ref_relationship_code(d),
                 "totalDurationDay":                 "0",
                 "admissionDate":                    f"{d['ADMISSION_DATE']} {d['ADMISSION_TIME']}:00",
+                
+                "refDischargeTypeCode":             await self.service.ref_discharge_type_code(d),
+                "dischargeDateTime":                f"{d['DISCHARGE_DATE']} {d['DISCHARGE_TIME']}:00",
+                "refDischargeOfficerTypeCode":      "02",
+                "mmc":                              "00",
+                "refDiagnosisItemTypeCode":         await self.service.ref_diagnosis_item_type_code(d),
+                "description":                      utils.get_str(d["ICD10_DESCRIPTION"]),
+                "refIcd10Main":                     utils.get_str(d["ICD10_CODE"]),
                 "person":                           person,
                 "nextOfKins":                       nok,
             }
@@ -187,6 +195,13 @@ class MasterPD101Controller:
                 "refSubSpecialityCode":             await self.service.ref_discipline_code(d),
                 "refWardClassCode":                 await self.service.ref_ward_class_code(d),
                 "refWardCategoryCode":              "00",
+                "refDischargeTypeCode":             await self.service.ref_discharge_type_code(d),
+                "dischargeDateTime":                f"{d['DISCHARGE_DATE']} {d['DISCHARGE_TIME']}:00",
+                "refDischargeOfficerTypeCode":      "02",
+                "mmc":                              "00",
+                "refDiagnosisItemTypeCode":         await self.service.ref_diagnosis_item_type_code(d),
+                "description":                      str(d["ICD10_DESCRIPTION"]),
+                "refIcd10Main":                     str(d["ICD10_CODE"]),
                 "person":                           person,
                 "nextOfKins":                       nok,
             }
@@ -194,7 +209,7 @@ class MasterPD101Controller:
             forms.append(m)
             
         facilityCode = settings.FACILITYCODE
-        filename = f"{facilityCode}_{ds1}_{ds2}_PD101.json"
+        filename = f"{facilityCode}_{ds1}_{ds2}_PD301.json"
         
         x = {
             "filename":           filename,
@@ -212,7 +227,7 @@ class MasterPD101Controller:
         res.headers["filename"] = filename
         res.headers["Content-Type"] = "application/json"
         return res
-    
+        
     @http_get("/export/rpt1/xlsx")
     async def xlsx(self, vt: str = "0", datefrom: str = "2023-01-01", dateto: str = "2024-01-01"):
         username = self.context.request.auth.username
@@ -224,7 +239,7 @@ class MasterPD101Controller:
         dt2 = dateto.split("-")
         ds1 = f"{dt1[2]}{dt1[1]}{dt1[0]}"
         ds2 = f"{dt2[2]}{dt2[1]}{dt2[0]}"
-        pf = "PD101" if vt == "0" else "RH101"
+        pf = "PD301" if vt == "0" else "RH301"
         
         facilityCode = settings.FACILITYCODE
         filename = f"{facilityCode}_{ds1}_{ds2}_{pf}.xlsx"
@@ -290,7 +305,7 @@ class MasterPD101Controller:
             return d
         
         return JsonResponse({"message": "Record not found"}, status=404)
-    
+        
     @http_put("/rpt1/{id}")
     async def update(self, id: str, data: dict = Body(...), vt: str = Query('0')):
         username = self.context.request.auth.username
@@ -312,11 +327,11 @@ class MasterPD101Controller:
         db = None
         
         if vt == '0':
-            s = f"master_pd101{suffix}"
+            s = f"master_pd301{suffix}"
             db = cli[s]
             
         else:
-            s = f"master_rh101{suffix}"
+            s = f"master_rh301{suffix}"
             db = cli[s]
             
         return db

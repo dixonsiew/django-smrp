@@ -39,18 +39,19 @@ COLUMN_MAP = [
     ColumnMap(field="NOK_ID_TYPE", text="NOK DOC TYPE"),
 
     ColumnMap(field="NOK_ID", text="NOK DOC NO"),
-    ColumnMap(field="NOK_STREET1", text="STREET1"),
-    ColumnMap(field="NOK_STREET2", text="STREET2"),
-    ColumnMap(field="NOK_CITYCODE", text="STREET3"),
-    ColumnMap(field="NOK_POSTCODE", text="POSTCODE"),
+    ColumnMap(field="STREET1", text="STREET1"),
+    ColumnMap(field="STREET2", text="STREET2"),
+    ColumnMap(field="CITYCODE", text="STREET3"),
+    ColumnMap(field="POSTCODE", text="POSTCODE"),
 
-    ColumnMap(field="NOK_OCITY", text="STATE"),
+    ColumnMap(field="OCITY", text="STATE"),
     ColumnMap(field="COUNTRY", text="COUNTRY"),
     ColumnMap(field="NOK_MOBILE_PHONE", text="NOK MOBILE NO"),
     ColumnMap(field="ADMISSION_DATE", text="ADMISSION DATE"),
     ColumnMap(field="ADMISSION_TIME", text="ADMISSION TIME"),
 
     ColumnMap(field="WARD_NO", text="WARD NO"),
-    ColumnMap(field="PRIMARY_SPECIALITY", text="PRIMARY SPECIALITY"),
+    ColumnMap(field="PRIMARY_SPECIALTY", text="PRIMARY SPECIALITY"),
     ColumnMap(field="PAYMENT_CLASS_CODE", text="PAYMENT CLASS"),
+    ColumnMap(field="DEATH_DATE", text="DEATH DATE"),
 ]
